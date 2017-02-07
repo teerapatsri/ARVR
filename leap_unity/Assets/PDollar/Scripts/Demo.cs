@@ -107,8 +107,11 @@ public class Demo : MonoBehaviour
         {
             points.Add(new Point(virtualKeyPosition.x, -virtualKeyPosition.y, strokeId));
             //Debug.Log (indexFinger.TipPosition.x * 5000 + " "  + indexFinger.TipPosition.y * 2000);
-            currentGestureLineRenderer.SetVertexCount(++vertexCount);
-            currentGestureLineRenderer.SetPosition(vertexCount - 1, Camera.main.ScreenToWorldPoint(new Vector3(virtualKeyPosition.x, virtualKeyPosition.y, 10)));
+            if (currentGestureLineRenderer != null)
+            {
+                currentGestureLineRenderer.SetVertexCount(++vertexCount);
+                currentGestureLineRenderer.SetPosition(vertexCount - 1, Camera.main.ScreenToWorldPoint(new Vector3(virtualKeyPosition.x, virtualKeyPosition.y, 10)));
+            }
         }
         //}
     }
