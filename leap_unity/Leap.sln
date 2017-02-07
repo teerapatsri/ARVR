@@ -1,0 +1,29 @@
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2008
+
+Project("{D0BF83BF-5396-B08B-6435-D781C969C228}") = "Leap", "Assembly-CSharp.csproj", "{DA9A2D6E-40F6-AB31-DF64-7C1C67DA9408}"
+EndProject
+Project("{D0BF83BF-5396-B08B-6435-D781C969C228}") = "Leap", "Assembly-CSharp-Editor.csproj", "{9632DDBE-3050-FDD0-03E8-BCCA58B33323}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DA9A2D6E-40F6-AB31-DF64-7C1C67DA9408}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA9A2D6E-40F6-AB31-DF64-7C1C67DA9408}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA9A2D6E-40F6-AB31-DF64-7C1C67DA9408}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA9A2D6E-40F6-AB31-DF64-7C1C67DA9408}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9632DDBE-3050-FDD0-03E8-BCCA58B33323}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9632DDBE-3050-FDD0-03E8-BCCA58B33323}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9632DDBE-3050-FDD0-03E8-BCCA58B33323}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9632DDBE-3050-FDD0-03E8-BCCA58B33323}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Assembly-CSharp.csproj
+	EndGlobalSection
+EndGlobal
