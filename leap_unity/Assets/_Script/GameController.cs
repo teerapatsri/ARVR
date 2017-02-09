@@ -11,20 +11,21 @@ public class GameController : MonoBehaviour
 	public float startWait;
 	public float waveWait; 
 
-	//public Text scoreText;
-	//public Text restartText;
-	//public Text gameOverText;
+	public Text scoreText;
+	public Text restartText;
+	public Text gameOverText;
 
 	private bool gameOver;
 	private bool restart;
 	private int score;
+    private int hp=3;
 
-	void Start ()
+    void Start ()
 	{
 		gameOver = false;
 		restart = false;
-		//restartText.text = "";
-		//gameOverText.text = "";
+		restartText.text = "HP : 3";
+		gameOverText.text = "";
 		score = 0;
 		UpdateScore ();
 		StartCoroutine (SpawnWaves ());
@@ -32,7 +33,22 @@ public class GameController : MonoBehaviour
 
 	void Update ()
 	{
-		if (restart)
+
+        if (score >= 20)
+        {
+            gameOverText.text = "You Win !!!";
+            restart = true;
+            gameOver = true;
+        }
+
+        if (hp<=0)
+        {
+            gameOverText.text = "You Lose T-T";
+            restart = true;
+            gameOver = true;
+        }
+
+        if (restart)
 		{
 			if (Input.GetKeyDown (KeyCode.R))
 			{
@@ -46,7 +62,8 @@ public class GameController : MonoBehaviour
 		yield return new WaitForSeconds (startWait);
 		while (true)
 		{
-			for (int i = 0; i < hazardCount; i++)
+            
+            for (int i = 0; i < hazardCount; i++)
 			{
 				GameObject hazard = hazards[Random.Range (0, hazards.Length)];
 				Vector3 spawnPosition = new Vector3 (Random.Range (-spawnValues.x, spawnValues.x), Random.Range(-spawnValues.y, spawnValues.y), spawnValues.z);
@@ -56,9 +73,11 @@ public class GameController : MonoBehaviour
 			}
 			yield return new WaitForSeconds (waveWait);
 
+
+
 			if (gameOver)
 			{
-				//restartText.text = "Press 'R' for Restart";
+				restartText.text = "Press 'R' for Restart";
 				restart = true;
 				break;
 			}
@@ -73,12 +92,23 @@ public class GameController : MonoBehaviour
 
 	void UpdateScore ()
 	{
-		//scoreText.text = "Score: " + score;
+		scoreText.text = "Score: " + score;
 	}
 
-	public void GameOver ()
+    public void hpDown()
+    {
+        hp -= 1;
+        UpdateHp();
+    }
+
+    void UpdateHp()
+    {
+        restartText.text = "HP: " + hp;
+    }
+
+    public void GameOver ()
 	{
-		//gameOverText.text = "Game Over!";
+		gameOverText.text = "Game Over!";
 		gameOver = true;
 	}
 }

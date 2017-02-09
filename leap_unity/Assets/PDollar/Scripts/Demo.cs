@@ -10,6 +10,8 @@ using PDollarGestureRecognizer;
 public class Demo : MonoBehaviour
 {
 
+    public GameObject shot;
+
     LeapProvider provider;
 
     public Finger indexFinger;
@@ -33,7 +35,16 @@ public class Demo : MonoBehaviour
     //GUI
     private string message;
     private bool recognized;
+    private bool isRecording;
     private string newGestureName = "";
+
+    public AudioSource m_ExplosionAudio;
+    public AudioSource audio;
+
+    public GameController gameController;
+    public float createPosZ;
+
+    public ParticleSystem m_ExplosionParticles;
 
     void Start()
     {
@@ -42,19 +53,24 @@ public class Demo : MonoBehaviour
         platform = Application.platform;
         drawArea = new Rect(0, 0, Screen.width - Screen.width / 3, Screen.height);
 
-        //Load pre-made gestures
-        TextAsset[] gesturesXml = Resources.LoadAll<TextAsset>("GestureSet/10-stylus-MEDIUM/");
-        foreach (TextAsset gestureXml in gesturesXml)
-            trainingSet.Add(GestureIO.ReadGestureFromXML(gestureXml.text));
+        ////Load pre-made gestures
+        //TextAsset[] gesturesXml = Resources.LoadAll<TextAsset>("GestureSet/10-stylus-MEDIUM/");
+        //foreach (TextAsset gestureXml in gesturesXml)
+        //    trainingSet.Add(GestureIO.ReadGestureFromXML(gestureXml.text));
 
         //Load user custom gestures
         string[] filePaths = Directory.GetFiles(Application.persistentDataPath, "*.xml");
         foreach (string filePath in filePaths)
             trainingSet.Add(GestureIO.ReadGestureFromFile(filePath));
+
+        isRecording = false;
+
+        print(Application.persistentDataPath);
     }
 
     void Update()
     {
+
         Frame frame = provider.CurrentFrame;
         foreach (Hand hand in frame.Hands)
         {
@@ -65,18 +81,37 @@ public class Demo : MonoBehaviour
             }
         }
         //Debug.Log ("");
-        if (indexFinger.IsExtended)
+        if (isRecording)
         {
-            virtualKeyPosition = new Vector3(indexFinger.TipPosition.x * 2000+200, indexFinger.TipPosition.y * 1000);
+            virtualKeyPosition = new Vector3(indexFinger.TipPosition.x * 2000+400, indexFinger.TipPosition.y * 1000 + 200);
         }
         //if (drawArea.Contains(virtualKeyPosition)) {
         //indexFinger.TipVelocity.Magnitude > 0.1
-        if (!indexFinger.IsExtended)
+        if (!isRecording && indexFinger.IsExtended)
         {
+            isRecording = true;
 
+            ++strokeId;
+
+            Transform tmpGesture = Instantiate(gestureOnScreenPrefab, transform.position, transform.rotation) as Transform;
+            currentGestureLineRenderer = tmpGesture.GetComponent<LineRenderer>();
+
+            gestureLinesRenderer.Add(currentGestureLineRenderer);
+
+            vertexCount = 0;
+        }
+        if (isRecording && !indexFinger.IsExtended)
+
+        {
+            isRecording = false;
+            recognized = true;
+            if (strokeId >= 0 && vertexCount >=2)
+            {
+                message = findSymbol();
+                createMagic(message);
+            }
             if (recognized)
             {
-
                 recognized = false;
                 strokeId = -1;
 
@@ -92,18 +127,9 @@ public class Demo : MonoBehaviour
 
                 gestureLinesRenderer.Clear();
             }
-
-            ++strokeId;
-
-            Transform tmpGesture = Instantiate(gestureOnScreenPrefab, transform.position, transform.rotation) as Transform;
-            currentGestureLineRenderer = tmpGesture.GetComponent<LineRenderer>();
-
-            gestureLinesRenderer.Add(currentGestureLineRenderer);
-
-            vertexCount = 0;
         }
         //Debug.Log (indexFinger.TipVelocity.Magnitude);
-        if (indexFinger.IsExtended)
+        if (isRecording)
         {
             points.Add(new Point(virtualKeyPosition.x, -virtualKeyPosition.y, strokeId));
             //Debug.Log (indexFinger.TipPosition.x * 5000 + " "  + indexFinger.TipPosition.y * 2000);
@@ -116,7 +142,7 @@ public class Demo : MonoBehaviour
         //}
     }
 
-    void OnGUI()
+    void OnXGUI()
     {
 
         GUI.Box(drawArea, "Draw Area");
@@ -139,8 +165,9 @@ public class Demo : MonoBehaviour
             //			message = gestureResult.GestureClass + " " + gestureResult.Score;
             //
             //			Debug.Log (gestureResult.GestureClass);
-            message = findSymbol();
-            createMagic(message);
+            //recognized = true;
+            //message = findSymbol();
+            //createMagic(message);
 
         }
 
@@ -196,15 +223,46 @@ public class Demo : MonoBehaviour
                 Debug.Log("circle");
                 //Instantiate (atk1, middle, transform.rotation);
                 //			Instantiate (atk1, transform.position, transform.rotation);
+                //var mousePos = new Vector3(Input.mousePosition.x, Input.mousePosition.y, createPosZ);
+                ////mousePos.z = 0;
+                //var screenMousePos = Camera.main.ScreenToWorldPoint(virtualKeyPosition);
+                //print(mousePos+"\t"+screenMousePos);
+
+                Instantiate(shot, Camera.main.ScreenToWorldPoint(new Vector3(virtualKeyPosition.x, virtualKeyPosition.y, createPosZ)), Quaternion.Euler(new Vector3(0, 0, 0)));
+                audio.Play();
                 break;
             case "five point star":
                 Debug.Log("star");
                 //Instantiate (atk2, transform.position, transform.rotation);
+
+                // Play the particle system.
+                Instantiate(m_ExplosionParticles, new Vector3(0, 0, 3), Quaternion.Euler(new Vector3(0, 0, 0)));
+
+                // Play the explosion sound effect.
+                m_ExplosionAudio.Play();
+
+                Bomb();
                 break;
             default:
                 Debug.Log("null");
                 break;
         }
 
+    }
+    GameObject[] gameObjects;
+
+    void Bomb()
+    {
+
+        gameObjects = GameObject.FindGameObjectsWithTag("Enemy");
+
+        for (var i = 0; i < gameObjects.Length; i++)
+        {
+            if (gameObjects[i].transform.position.z < 17)
+            {
+                gameController.AddScore(1);
+                Destroy(gameObjects[i]);
+            }
+        }
     }
 }
